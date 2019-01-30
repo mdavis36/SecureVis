@@ -14,8 +14,9 @@ cap = cv2.VideoCapture(VIDFILE_NAME)
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.connect((HOST,PORT))
 
-while True:
-    ret,frame = cap.read()
+ret,frame = cap.read()
+while ret:
+    #ret,frame = cap.read()
     data = pickle.dumps(frame)
     
     try:
@@ -24,3 +25,4 @@ while True:
         print 'I AM HERE'
     except:
         print "SENDING FAILED"
+    ret,frame = cap.read()
