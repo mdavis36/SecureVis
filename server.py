@@ -11,7 +11,7 @@ import datetime
 
 HOST ='127.0.0.1'
 PORT = 1110
-BUFFER_SIZE = 4096
+BUFFER_SIZE = 8192
 STRUCT_ARG = "L"
 
 
@@ -21,7 +21,8 @@ def new_client(conn,addr):
     data = ""
     # Packet will be the size of largest unsigned LONG value
     packet_size = struct.calcsize(STRUCT_ARG);
-    #out = cv2.VideoWriter('output.avi',fourcc,20.0,(640,480))
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')
+    outputVid = cv2.VideoWriter('output.avi',fourcc,20.0,(640,480))
     while True:
         # get the size of the data being sent over
         while len(data) < packet_size:
@@ -36,9 +37,9 @@ def new_client(conn,addr):
         data = data[msg_size:]
 
         frame = pickle.loads(raw_frame)
-        #print frame
-        cv2.imshow('frame',frame)
-        
+        frame = cv2.resize(frame,(640,480))
+        #cv2.imshow('frame',frame)
+        outputVid.write(frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             conn.close()
             break
