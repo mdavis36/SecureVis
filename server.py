@@ -8,6 +8,7 @@ import struct
 import sys
 import thread
 import datetime
+import os
 
 HOST ='127.0.0.1'
 PORT = 1110
@@ -16,13 +17,19 @@ STRUCT_ARG = "L"
 
 
 def new_client(conn,addr):
+    #path = os.getcwd()
+    ROOM_NAME = conn.recv(BUFFER_SIZE);
+    #print(ROOM_NAME)
+    
+
+    
     now = datetime.datetime.now()
-    dateAndTime = now.strftime("%Y-%m-%d_%H-%M")
+    dateAndTime = now.strftime("%Y%m%d_%H%M")
     data = ""
     # Packet will be the size of largest unsigned LONG value
     packet_size = struct.calcsize(STRUCT_ARG);
     fourcc = cv2.VideoWriter_fourcc(*'avc1')
-    outputVid = cv2.VideoWriter('output.avi',fourcc,20.0,(640,480))
+    outputVid = cv2.VideoWriter(ROOM_NAME+ "_"  +dateAndTime + "_output.avi",fourcc,20.0,(640,480))
     while True:
         # get the size of the data being sent over
         while len(data) < packet_size:
@@ -55,7 +62,7 @@ print 'Socket is now listening'
 
 while True:
     conn, addr = s.accept()
-    new_client(conn,addr)
+    thread.start_new_thread(new_client,(conn,addr));
 
 #cv2.destroyAllWindows()
 s.close()

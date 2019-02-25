@@ -6,13 +6,13 @@ import time
 opt = {
     'model':'cfg/yolov1.cfg',
     'load':'bin/yolov1.weights',
-    'threshold':0.02,
+    'threshold':0.05,
     'gpu':1.0
 }
 
 tfnet = TFNet(opt)
 
-cap = cv2.VideoCapture('test480.mp4')
+cap = cv2.VideoCapture('test1_1080p')
 cols = [tuple(255 * np.random.rand(3)) for i in range(5)]
 out = cv2.VideoWriter('out.avi', cv2.VideoWriter_fourcc('M','J','P','G'), cap.get(cv2.CAP_PROP_FPS),\
                                     (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))\
