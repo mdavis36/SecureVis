@@ -9,7 +9,7 @@ import sys
 
 HOST ='127.0.0.1'
 PORT = 1110
-VIDFILE_NAME = "test480.mp4"
+VIDFILE_NAME = "testFootage/test480.mp4"
 # room name will be defined on command line
 ROOM_NAME = sys.argv[1];
 cap = cv2.VideoCapture(VIDFILE_NAME)
