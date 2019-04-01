@@ -24,11 +24,16 @@ public class Communication {
 	private ServerSocket server;
 	private Socket connection;
 	
+	private String message;
+	
 	Communication() throws UnknownHostException, IOException {
 		// IntetAddress.getByName(null) associates server with local IP
 		server = new ServerSocket(PORT,1,InetAddress.getByName(null));
-		
-		
+		waitForConnection();
+		setUpStreams();
+		sendMessage();
+		recieveMessage();
+		/*
 		while (true) {
 			try {
 				waitForConnection();
@@ -40,7 +45,7 @@ public class Communication {
 			} finally {
 				//close();
 			}
-		}
+		} */
 		
 	}
 	
@@ -61,6 +66,34 @@ public class Communication {
 	
 	private void showMessage(String str) {
 		System.out.println(str);
+	}
+	
+	private void sendMessage() {
+		try {
+			output.writeObject("QUERY");
+			output.flush();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	private void recieveMessage() {
+		try {
+		 message = (String)	input.readObject();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public String getMessage() {
+		return message;
 	}
 
 }
