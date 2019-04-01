@@ -1,4 +1,7 @@
+import java.io.EOFException;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.*;
 import java.util.Scanner;
 
@@ -12,24 +15,52 @@ import java.util.Scanner;
 
 public class Communication {
 	
-	private Socket socket;
-	
-	
 	private static final int PORT = 65432;
 	private static final int HEADER_SIZE = 16;
 	
+	
+	private ObjectOutputStream output;
+	private ObjectInputStream input;
+	private ServerSocket server;
+	private Socket connection;
+	
 	Communication() throws UnknownHostException, IOException {
-		socket = new Socket(InetAddress.getLocalHost(),PORT);
-	}
-	/*
-	public String getInput() {
-		try {
-			Scanner in = new Scanner(socket.getInputStream());
-			
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		// IntetAddress.getByName(null) associates server with local IP
+		server = new ServerSocket(PORT,1,InetAddress.getByName(null));
+		
+		
+		while (true) {
+			try {
+				waitForConnection();
+				setUpStreams();
+				//sendData
+				//recieveData
+			} catch(EOFException eofException) {
+				
+			} finally {
+				//close();
+			}
 		}
 		
-	} */
+	}
+	
+	private void waitForConnection() throws IOException {
+		showMessage("Waiting for connection... ");
+		connection = server.accept();
+		showMessage("Now connected to " + connection.getInetAddress().getHostName());
+	}
+	
+	private void setUpStreams() throws IOException {
+		output = new ObjectOutputStream(connection.getOutputStream());
+		output.flush();
+		
+		input = new ObjectInputStream(connection.getInputStream());
+		
+		showMessage("Streams are now setup!");
+	}
+	
+	private void showMessage(String str) {
+		System.out.println(str);
+	}
+
 }
