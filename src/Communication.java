@@ -92,6 +92,7 @@ public class Communication {
 		
 	}
 	
+	// return message stored in this object
 	public String getMessage() {
 		return message;
 	}
