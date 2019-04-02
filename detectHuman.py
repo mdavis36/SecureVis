@@ -1,4 +1,5 @@
 import cv2
+import sys
 from darkflow.net.build import TFNet
 import numpy as np
 import time
@@ -12,7 +13,7 @@ opt = {
 
 tfnet = TFNet(opt)
 
-cap = cv2.VideoCapture('test1_1080p')
+cap = cv2.VideoCapture(sys.argv[1])
 cols = [tuple(255 * np.random.rand(3)) for i in range(5)]
 out = cv2.VideoWriter('out.avi', cv2.VideoWriter_fourcc('M','J','P','G'), cap.get(cv2.CAP_PROP_FPS),\
                                     (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)), int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))\
