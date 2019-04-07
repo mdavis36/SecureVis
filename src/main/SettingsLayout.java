@@ -1,3 +1,4 @@
+package main;
 import javafx.scene.layout.BorderPane;
 
 public class SettingsLayout extends BorderPane {
