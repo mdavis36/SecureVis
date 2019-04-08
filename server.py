@@ -11,6 +11,17 @@ import _thread
 import datetime
 import os
 import time
+from darkflow.net.build import TFNet
+
+opt = {        
+    'model':'cfg/yolov1.cfg',
+    'load':'bin/yolov1.weights',
+    'threshold':0.05,
+    'gpu':1.0
+}
+
+tfnet = TFNet(opt)
+cols = [tuple(255 * np.random.rand(3)) for i in range(5)]
 
 HOST = socket.gethostbyname('0.0.0.0')#'192.168.0.24'
 PORT = int(sys.argv[1])
@@ -36,16 +47,14 @@ def new_client(conn,addr):
     fourcc = cv2.VideoWriter_fourcc(*'avc1')
     #outputVid = cv2.VideoWriter(str(ROOM_NAME, "utf-8") + "_"  +dateAndTime + "_output.avi",fourcc,20.0,(640,480))
 
+    frame_count = 0
+
 
     while True:
-        #print (f"Packet Size {packet_size}")
-
 
         # get the size of the data being sent over
         while len(data) < packet_size:
-            #print(f"Data Length {len(data)}")
             new_data = conn.recv(BUFFER_SIZE)
-            #print(f"recv : {len(new_data)}")
             data += new_data
 
         
@@ -53,10 +62,7 @@ def new_client(conn,addr):
         data = data[packet_size:]
         msg_size = struct.unpack(STRUCT_ARG,packed_msg_size)[0]
 
-        #print (f"msg_size{int(msg_size)}")
         
-        #print(f"Data Length {len(data)}")
-
         # get the data from the struct that refers to the video.
         while len(data) < msg_size:
             data += conn.recv(BUFFER_SIZE)
@@ -64,21 +70,30 @@ def new_client(conn,addr):
         raw_frame = data[:msg_size]
         data = data[msg_size:]
 
-        #if len(raw_frame) > 32 :
-        # Handle Frame Data Mesage
-        frame = pickle.loads(raw_frame, encoding='latin1')
-        frame = cv2.resize(frame,(640,480))
+        if (msg_size > 32):
+            frame_count += 1 
+            print("Frame Data : ", frame_count)
+
+            # Handle Frame Data Mesage
+            frame = pickle.loads(raw_frame, encoding='latin1')
+            frame = cv2.resize(frame,(640,480))
+            res = tfnet.return_predict(frame)
+            for c, r in zip(cols, res):
+                tl = (r['topleft']['x'], r['topleft']['y'])
+                br = (r['bottomright']['x'], r['bottomright']['y'])
+                label = r['label']
+                if label == 'person':
+                    frame = cv2.rectangle(frame, tl, br, c, 7)
+                    frame = cv2.putText(frame, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
+
+
         cv2.imshow(str(ROOM_NAME, 'utf-8'),frame)
-        #print("Frame Recieved.")
         #outputVid.write(frame)
 
         if cv2.waitKey(1) & 0xFF == ord('q'):
             conn.close()
             cv2.destroyWindow(str(ROOM_NAME, 'utf-8'))
             break
-    #else:
-            # Other Type Message
-            
 
 
 #-------------------MAIN EXECUTION-------------------
@@ -94,7 +109,3 @@ atexit.register(exit_handler, s)
 while True:
     conn, addr = s.accept()
     _thread.start_new_thread(new_client,(conn,addr));
-
-#s.close()
-
-
