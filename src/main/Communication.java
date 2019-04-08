@@ -1,7 +1,12 @@
+package main;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.net.*;
 import java.util.Scanner;
 
@@ -13,26 +18,32 @@ import java.util.Scanner;
 	// if user wants to exit settings page terminate
 
 
+// change input and output streams to non java dependent things
+// byte input streaam?
 public class Communication {
 	
 	private static final int PORT = 65432;
 	private static final int HEADER_SIZE = 16;
 	
 	
-	private ObjectOutputStream output;
-	private ObjectInputStream input;
-	private ServerSocket server;
+	private PrintWriter output;
+	private BufferedReader input;
+	//private ServerSocket server;
 	private Socket connection;
+	
+	private InetSocketAddress endpoint; 
 	
 	private String message;
 	
-	Communication() throws UnknownHostException, IOException {
+	public Communication() throws UnknownHostException, IOException, ClassNotFoundException {
 		// IntetAddress.getByName(null) associates server with local IP
-		server = new ServerSocket(PORT,1,InetAddress.getByName(null));
+		endpoint = new InetSocketAddress(InetAddress.getLocalHost(),PORT);
+		connection = new Socket();
 		waitForConnection();
 		setUpStreams();
 		sendMessage();
 		recieveMessage();
+		close();
 		/*
 		while (true) {
 			try {
@@ -51,15 +62,15 @@ public class Communication {
 	
 	private void waitForConnection() throws IOException {
 		showMessage("Waiting for connection... ");
-		connection = server.accept();
+		connection.connect(endpoint);
 		showMessage("Now connected to " + connection.getInetAddress().getHostName());
 	}
 	
 	private void setUpStreams() throws IOException {
-		output = new ObjectOutputStream(connection.getOutputStream());
+		output = new PrintWriter(connection.getOutputStream(),true);
 		output.flush();
 		
-		input = new ObjectInputStream(connection.getInputStream());
+		input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		
 		showMessage("Streams are now setup!");
 	}
@@ -68,22 +79,14 @@ public class Communication {
 		System.out.println(str);
 	}
 	
-	private void sendMessage() {
-		try {
-			output.writeObject("QUERY");
-			output.flush();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	private void sendMessage() throws IOException {
+		output.println("QUERY");
+		output.flush();
 	}
 	
-	private void recieveMessage() {
+	private void recieveMessage() throws ClassNotFoundException {
 		try {
-		 message = (String)	input.readObject();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		 message = (String)	input.readLine();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -95,6 +98,14 @@ public class Communication {
 	// return message stored in this object
 	public String getMessage() {
 		return message;
+	}
+	
+	private void close() throws IOException {
+		showMessage("closing connection");
+		output.close();
+		input.close();
+		connection.close();
+		
 	}
 
 }
