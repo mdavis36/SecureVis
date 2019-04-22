@@ -35,13 +35,13 @@ public class Communication {
 	
 	private String message;
 	
-	public Communication() throws UnknownHostException, IOException, ClassNotFoundException {
+	public Communication(String messageToSend) throws UnknownHostException, IOException, ClassNotFoundException {
 		// IntetAddress.getByName(null) associates server with local IP
 		endpoint = new InetSocketAddress(InetAddress.getLocalHost(),PORT);
 		connection = new Socket();
 		waitForConnection();
 		setUpStreams();
-		sendMessage();
+		sendMessage(messageToSend);
 		recieveMessage();
 		close();
 		/*
@@ -79,8 +79,8 @@ public class Communication {
 		System.out.println(str);
 	}
 	
-	private void sendMessage() throws IOException {
-		output.println("QUERY");
+	private void sendMessage(String messageToSend) throws IOException {
+		output.println(messageToSend);
 		output.flush();
 	}
 	
@@ -96,7 +96,7 @@ public class Communication {
 	}
 	
 	// return message stored in this object
-	public String getMessage() {
+	public String getReturnMessage() {
 		return message;
 	}
 	
