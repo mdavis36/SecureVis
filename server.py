@@ -29,6 +29,37 @@ BUFFER_SIZE = 4096
 STRUCT_ARG = "I"
 PERFORM_RECOGNITION = True
 
+class MsgHandler:
+    data = b''
+
+    def __init__(self):
+        self.data = b""
+        self.packet_size = struct.calcsize(STRUCT_ARG) 
+
+    def getNextMsg(self, conn):
+        # get the size of the data being sent over
+        while len(self.data) < self.packet_size:
+            new_data = conn.recv(BUFFER_SIZE)
+            self.data += new_data
+
+        packed_msg_size = self.data[:self.packet_size]
+        self.data = self.data[self.packet_size:]
+        msg_size = struct.unpack(STRUCT_ARG,packed_msg_size)[0]
+
+    
+        # get the data from the struct that refers to the video.
+        while len(self.data) < msg_size:
+           self.data += conn.recv(BUFFER_SIZE)
+        
+        raw_frame = self.data[:msg_size]
+        self.data = self.data[msg_size:]
+    
+        return raw_frame, msg_size
+
+   
+
+
+
 def exit_handler(s):
     print("Closing Socket and windows")
     s.close()
@@ -38,6 +69,9 @@ def exit_handler(s):
 def new_client(conn,addr):
     
     ROOM_NAME = str(conn.recv(BUFFER_SIZE), 'utf-8');
+
+
+    msgHandler = MsgHandler()
     
     if ("GUI" in ROOM_NAME):
         conn.send((threading.active_count()-2) +"\n")
@@ -58,7 +92,7 @@ def new_client(conn,addr):
 
 
         while True:
-
+            '''
             # get the size of the data being sent over
             while len(data) < packet_size:
                 new_data = conn.recv(BUFFER_SIZE)
@@ -75,7 +109,10 @@ def new_client(conn,addr):
             
             raw_frame = data[:msg_size]
             data = data[msg_size:]
-        
+            '''
+
+            raw_frame, msg_size = msgHandler.getNextMsg(conn)
+
             if (msg_size > 32):
                 frame_count += 1 
                 print("Frame Data : ", frame_count)
