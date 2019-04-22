@@ -16,7 +16,7 @@ from darkflow.net.build import TFNet
 opt = {        
     'model':'cfg/yolov1.cfg',
     'load':'bin/yolov1.weights',
-    'threshold':0.05,
+    'threshold':0.045,
     'gpu':1.0
 }
 
@@ -27,6 +27,7 @@ HOST = socket.gethostbyname('0.0.0.0')#'192.168.0.24'
 PORT = int(sys.argv[1])
 BUFFER_SIZE = 4096
 STRUCT_ARG = "I"
+PERFORM_RECOGNITION = True
 
 def exit_handler(s):
     print("Closing Socket and windows")
@@ -48,7 +49,7 @@ def new_client(conn,addr):
     #outputVid = cv2.VideoWriter(str(ROOM_NAME, "utf-8") + "_"  +dateAndTime + "_output.avi",fourcc,20.0,(640,480))
 
     frame_count = 0
-
+    last_frame_time = time.time()
 
     while True:
 
@@ -69,23 +70,29 @@ def new_client(conn,addr):
         
         raw_frame = data[:msg_size]
         data = data[msg_size:]
-
+    
         if (msg_size > 32):
             frame_count += 1 
             print("Frame Data : ", frame_count)
+            last_frame_time = time.time()
 
             # Handle Frame Data Mesage
             frame = pickle.loads(raw_frame, encoding='latin1')
-            frame = cv2.resize(frame,(640,480))
-            res = tfnet.return_predict(frame)
-            for c, r in zip(cols, res):
-                tl = (r['topleft']['x'], r['topleft']['y'])
-                br = (r['bottomright']['x'], r['bottomright']['y'])
-                label = r['label']
-                if label == 'person':
-                    frame = cv2.rectangle(frame, tl, br, c, 7)
-                    frame = cv2.putText(frame, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
 
+            frame = cv2.resize(frame,(1280,960))
+            if (PERFORM_RECOGNITION and frame_count % 10 == 1):
+                res = tfnet.return_predict(frame)
+                for c, r in zip(cols, res):
+                    tl = (r['topleft']['x'], r['topleft']['y'])
+                    br = (r['bottomright']['x'], r['bottomright']['y'])
+                    label = r['label']
+                    if label == 'person':
+                        frame = cv2.rectangle(frame, tl, br, c, 7)
+                        frame = cv2.putText(frame, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
+        #print(time.time() - last_frame_time )
+
+        #if (time.time() - last_frame_time >= 3):
+        #    frame = np.zeros(frame.size(), dtype=np.uint8)
 
         cv2.imshow(str(ROOM_NAME, 'utf-8'),frame)
         #outputVid.write(frame)
