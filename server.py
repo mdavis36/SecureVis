@@ -147,6 +147,7 @@ def new_client(conn,addr, objR):
     msgHandler = MsgHandler()
 
     streamin_frame_data = False
+    triggered_active = False
     conn.setblocking(0) 
 
     if ("GUI" in ROOM_NAME):
@@ -154,14 +155,10 @@ def new_client(conn,addr, objR):
     else:
         print (ROOM_NAME)
 
-        now = datetime.datetime.now()
-        #dateAndTime = now.strftime("%Y%m%d_%H%M")
-        # Packet size will be no larger than the size of largest unsigned LONG value
-        #fourcc = cv2.VideoWriter_fourcc(*'avc1')
-        #outputVid = cv2.VideoWriter(str(ROOM_NAME, "utf-8") + "_"  +dateAndTime + "_output.avi",fourcc,20.0,(640,480))
 
         frame_count = 0
         last_frame_time = time.time()
+        last_trigger_time = time.time()
         frame = np.zeros( (960, 1280, 3), dtype=np.uint8)
         while True:
             next_msg = msgHandler.getNextMsg(conn)
@@ -172,6 +169,10 @@ def new_client(conn,addr, objR):
                     if not streamin_frame_data:
                         streamin_frame_data = True 
                         print("Streaming Frame Data")
+                        now = datetime.datetime.now()
+                        dateAndTime = now.strftime("%Y%m%d_%H%M%S")
+                        fourcc = cv2.VideoWriter_fourcc(*'avc1')
+                        outputVid = cv2.VideoWriter(ROOM_NAME + "_"  +dateAndTime + "_output.avi",fourcc,20,(1280,960))
 
                     last_frame_time = time.time()
 
@@ -182,21 +183,28 @@ def new_client(conn,addr, objR):
                     if (PERFORM_RECOGNITION and frame_count % 10 == 1):
                         frame, res = objR.recog(frame)
                         if res:
-                            print("TRIGGERED")
-                            conn.send(str.encode("TRIGGEREDD!!!!"))
+                            last_trigger_time = time.time()
+                            if not triggered_active:
+                                triggered_active = True
+                                conn.send(str.encode("SET_MODE TRIGGERED TRUE"))
+                        elif triggered_active and time.time() - last_trigger_time > 10:
+                            triggered_active = False
+                            conn.send(str.encode("SET_MODE TRIGGERED FALSE"))
 
+                    if streamin_frame_data:  
+                        outputVid.write(frame)
+                        outputVid.write(frame)
 
-
-
-            if (time.time() - last_frame_time >= 3):
+            if (time.time() - last_frame_time >= 10):
                 frame = np.zeros((960, 1280, 3), dtype=np.uint8)
                 if streamin_frame_data:
                     streamin_frame_data = False
                     print("Stopped Streaming Frame Data")
                     print(time.time() - last_frame_time )
+                    outputVid.release()
+                    outputVid = None
 
             cv2.imshow(ROOM_NAME,frame)
-            #outputVid.write(frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 conn.close()
