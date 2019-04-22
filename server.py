@@ -11,6 +11,7 @@ import _thread
 import datetime
 import os
 import time
+from enum import Enum
 from darkflow.net.build import TFNet
 
 opt = {        
@@ -26,8 +27,25 @@ cols = [tuple(255 * np.random.rand(3)) for i in range(5)]
 HOST = socket.gethostbyname('0.0.0.0')#'192.168.0.24'
 PORT = int(sys.argv[1])
 BUFFER_SIZE = 4096
+MSG_DEF_SZ = 32
 STRUCT_ARG = "I"
 PERFORM_RECOGNITION = True
+
+
+#==============================================================================
+
+
+class MsgType(Enum):
+    PURE_MSG = 0
+    MOTION_FRAME = 1
+    TRIGGER_FRAME = 2
+
+class Message:
+    def __init__(self, raw_data, msg_size = MSG_DEF_SZ, msg_type = MsgType.PURE_MSG):
+        self.data = raw_data
+        self.size = msg_size
+        self.type = msg_type
+
 
 class MsgHandler:
     data = b''
@@ -53,11 +71,14 @@ class MsgHandler:
         
         raw_frame = self.data[:msg_size]
         self.data = self.data[msg_size:]
-    
-        return raw_frame, msg_size
-
    
+        if (msg_size > 32): msg_type = MsgType.MOTION_FRAME
+        else: msg_type = MsgType.PURE_MSG
 
+        return Message(raw_frame, msg_size, msg_type)
+
+
+#==============================================================================
 
 
 def exit_handler(s):
@@ -69,22 +90,21 @@ def exit_handler(s):
 def new_client(conn,addr):
     
     ROOM_NAME = str(conn.recv(BUFFER_SIZE), 'utf-8');
-
-
     msgHandler = MsgHandler()
-    
+
+
+
     if ("GUI" in ROOM_NAME):
         conn.send((threading.active_count()-2) +"\n")
     else:
         print (ROOM_NAME)
 
         now = datetime.datetime.now()
-        dateAndTime = now.strftime("%Y%m%d_%H%M")
+        #dateAndTime = now.strftime("%Y%m%d_%H%M")
         data = b""
         
         # Packet size will be no larger than the size of largest unsigned LONG value
-        packet_size = struct.calcsize(STRUCT_ARG);
-        fourcc = cv2.VideoWriter_fourcc(*'avc1')
+        #fourcc = cv2.VideoWriter_fourcc(*'avc1')
         #outputVid = cv2.VideoWriter(str(ROOM_NAME, "utf-8") + "_"  +dateAndTime + "_output.avi",fourcc,20.0,(640,480))
 
         frame_count = 0
@@ -92,34 +112,15 @@ def new_client(conn,addr):
 
 
         while True:
-            '''
-            # get the size of the data being sent over
-            while len(data) < packet_size:
-                new_data = conn.recv(BUFFER_SIZE)
-                data += new_data
+            next_msg = msgHandler.getNextMsg(conn)
 
-            packed_msg_size = data[:packet_size]
-            data = data[packet_size:]
-            msg_size = struct.unpack(STRUCT_ARG,packed_msg_size)[0]
-
-        
-            # get the data from the struct that refers to the video.
-            while len(data) < msg_size:
-                data += conn.recv(BUFFER_SIZE)
-            
-            raw_frame = data[:msg_size]
-            data = data[msg_size:]
-            '''
-
-            raw_frame, msg_size = msgHandler.getNextMsg(conn)
-
-            if (msg_size > 32):
+            if (next_msg.type == MsgType.MOTION_FRAME):
                 frame_count += 1 
                 print("Frame Data : ", frame_count)
                 last_frame_time = time.time()
 
                 # Handle Frame Data Mesage
-                frame = pickle.loads(raw_frame, encoding='latin1')
+                frame = pickle.loads(next_msg.data, encoding='latin1')
 
                 frame = cv2.resize(frame,(1280,960))
                 if (PERFORM_RECOGNITION and frame_count % 10 == 1):
@@ -146,15 +147,18 @@ def new_client(conn,addr):
         
 
 #-------------------MAIN EXECUTION-------------------
+def main():
+    s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind((HOST,int(sys.argv[1])))
+    s.listen(10)
+    print ('Socket is now listening')
 
-s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
-s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.bind((HOST,int(sys.argv[1])))
-s.listen(10)
-print ('Socket is now listening')
+    atexit.register(exit_handler, s)
 
-atexit.register(exit_handler, s)
+    while True:
+        conn, addr = s.accept()
+        _thread.start_new_thread(new_client,(conn,addr));
 
-while True:
-    conn, addr = s.accept()
-    _thread.start_new_thread(new_client,(conn,addr));
+
+if __name__ == "__main__" : main()
