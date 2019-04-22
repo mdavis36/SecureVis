@@ -7,12 +7,15 @@ import javafx.scene.layout.VBox;
 public class StreamingPage extends VBox {
 	
 	private static final String GET_ROOMS = "Rooms";
+	private static final String GUI = "GUI";
 	
 	
 	public StreamingPage() {
 		Communication connect;
+		//generateRooms(5);
+		
 		try {
-			connect = new Communication(GET_ROOMS);
+			connect = new Communication(GUI + GET_ROOMS);
 			String numberRoomsString = connect.getReturnMessage();
 			
 			int numRooms = Integer.getInteger(numberRoomsString);
