@@ -41,18 +41,24 @@ class ObjRecognition:
         self.cols = [tuple(255 * np.random.rand(3)) for i in range(5)]
 
     def recog(self, frame, triggerables = ('person')):
+        result = False
         res = self.tfnet.return_predict(frame)
         for c, r in zip(self.cols, res):
             tl = (r['topleft']['x'], r['topleft']['y'])
             br = (r['bottomright']['x'], r['bottomright']['y'])
             label = r['label']
             if label == triggerables:
+                result = True
                 frame = cv2.rectangle(frame, tl, br, c, 7)
                 frame = cv2.putText(frame, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
-        return frame
+        return frame, result
 
+class ObjRecognitionV34:
+    def __init__(self):
+        pass
 
-
+    def recog(self, frame, triggerables = ('person')):
+        pass
 
 #==============================================================================
 
@@ -156,7 +162,7 @@ def new_client(conn,addr, objR):
 
         frame_count = 0
         last_frame_time = time.time()
-        frame = np.zeros( (1280, 960, 3), dtype=np.uint8)
+        frame = np.zeros( (960, 1280, 3), dtype=np.uint8)
         while True:
             next_msg = msgHandler.getNextMsg(conn)
 
@@ -174,7 +180,10 @@ def new_client(conn,addr, objR):
                     frame = cv2.resize(frame,(1280,960))
 
                     if (PERFORM_RECOGNITION and frame_count % 10 == 1):
-                        frame = objR.recog(frame)
+                        frame, res = objR.recog(frame)
+                        if res:
+                            print("TRIGGERED")
+                            conn.send(str.encode("TRIGGEREDD!!!!"))
 
 
 
