@@ -161,6 +161,7 @@ def new_client(conn,addr, objR):
     stream_video = False
     streamin_frame_data = False
     triggered_active = False
+    triggerable_found = False
     conn.setblocking(0) 
 
     if ("GUI" in ROOM_NAME):
@@ -197,6 +198,7 @@ def new_client(conn,addr, objR):
         last_frame_time = time.time()
         last_trigger_time = time.time()
         frame = np.zeros( (960, 1280, 3), dtype=np.uint8)
+        output_file_name = ""
         while True:
 
 
@@ -211,7 +213,11 @@ def new_client(conn,addr, objR):
                         now = datetime.datetime.now()
                         dateAndTime = now.strftime("%Y%m%d_%H%M%S")
                         fourcc = cv2.VideoWriter_fourcc(*'avc1')
-                        outputVid = cv2.VideoWriter(ROOM_NAME + "_"  +dateAndTime + "_output.avi",fourcc,20,(1280,960))
+                        
+                        output_file_name = ROOM_NAME + "_" + dateAndTime + "_output.avi"
+                        outputVid = cv2.VideoWriter(output_file_name,fourcc,20,(1280,960))
+
+                        triggerable_found = False
 
                     last_frame_time = time.time()
 
@@ -225,6 +231,7 @@ def new_client(conn,addr, objR):
                             last_trigger_time = time.time()
                             if not triggered_active:
                                 triggered_active = True
+                                triggerable_found = True
                                 conn.send(str.encode("SET_MODE TRIGGERED TRUE"))
                         elif triggered_active and time.time() - last_trigger_time > 10:
                             triggered_active = False
@@ -253,9 +260,12 @@ def new_client(conn,addr, objR):
                     print(time.time() - last_frame_time )
                     outputVid.release()
                     outputVid = None
+                    if not triggerable_found:
+                        os.system("rm " + output_file_name)
 
             cmd = ""
             with room_cmd_queue_lock:
+
                 if ROOM_NAME in room_cmd_queue:
                     cmd_list = room_cmd_queue[ROOM_NAME]
                     if len(room_cmd_queue[ROOM_NAME]) > 0:
