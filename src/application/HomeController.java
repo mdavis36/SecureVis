@@ -13,10 +13,13 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Slider;
+import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.util.Duration;
+import main.StreamingPage;
+import main.StreamingPageRow;
 
 public class HomeController implements Initializable {
 	
@@ -25,6 +28,7 @@ public class HomeController implements Initializable {
 	@FXML private Button restartButton;
 	@FXML private MediaView videoView;
 	@FXML private Slider videoSlider;
+	@FXML private VBox streamingPage;
 	private MediaPlayer videoPlayer;
 	private Media video;
 	
@@ -99,4 +103,17 @@ public class HomeController implements Initializable {
             } 
         }); 
     } 
+    
+    @FXML // display rooms for streaming
+    public void displayRooms() {
+    	streamingPage.getChildren().clear();
+    	generateRooms(5);
+    }
+    private void generateRooms(int numRooms) {
+		for (int i = 0; i < numRooms; i++) {
+			streamingPage.getChildren().add(new StreamingPageRow("TEST",5));
+		}
+		
+	}
+   
 }

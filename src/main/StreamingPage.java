@@ -12,8 +12,8 @@ public class StreamingPage extends VBox {
 	
 	public StreamingPage() {
 		Communication connect;
-		//generateRooms(5);
-		
+		generateRooms(5);
+		/*
 		try {
 			connect = new Communication(GUI + GET_ROOMS);
 			String numberRoomsString = connect.getReturnMessage();
@@ -24,7 +24,7 @@ public class StreamingPage extends VBox {
 		} catch (ClassNotFoundException | IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} */
 		
 		
 	}

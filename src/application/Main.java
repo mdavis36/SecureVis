@@ -8,6 +8,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import main.StreamingPage;
 
 public class Main extends Application {
 	private Stage primaryStage;
@@ -37,5 +38,6 @@ public class Main extends Application {
 		primaryStage.setScene(mainScene);
 		primaryStage.show();
 	}
+	
 
 }

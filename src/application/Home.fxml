@@ -10,9 +10,12 @@
    <center>
       <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
-          <Tab text="Streaming">
+          <Tab onSelectionChanged="#displayRooms" text="Streaming">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <VBox fx:id="streamingPage" layoutX="2.0" onKeyPressed="#displayRooms" prefHeight="641.0" prefWidth="600.0" />
+                     </children></AnchorPane>
             </content>
           </Tab>
           <Tab text="Video Playback">
