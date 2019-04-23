@@ -22,9 +22,10 @@
                         <MediaView fx:id="videoView" fitHeight="600.0" fitWidth="600.0" layoutY="36.0" />
                         <ComboBox layoutY="5.0" prefWidth="200.0" promptText="Room" />
                         <ComboBox layoutX="400.0" layoutY="5.0" prefWidth="200.0" promptText="Date" />
-                        <Button fx:id="playButton" layoutX="214.0" layoutY="5.0" mnemonicParsing="false" onAction="#playVideo" text="Play" />
-                        <Button fx:id="pauseButton" layoutX="261.0" layoutY="5.0" mnemonicParsing="false" onAction="#pauseVideo" text="Pause" />
-                        <Button fx:id="restartButton" layoutX="320.0" layoutY="5.0" mnemonicParsing="false" onAction="#restartVideo" text="Restart" />
+                        <Button fx:id="playButton" layoutX="14.0" layoutY="589.0" mnemonicParsing="false" onAction="#playVideo" text="Play" />
+                        <Button fx:id="pauseButton" layoutX="61.0" layoutY="589.0" mnemonicParsing="false" onAction="#pauseVideo" text="Pause" />
+                        <Button fx:id="restartButton" layoutX="120.0" layoutY="589.0" mnemonicParsing="false" onAction="#restartVideo" text="Restart" />
+                        <Slider fx:id="videoSlider" layoutX="200.0" layoutY="596.0" prefHeight="18.0" prefWidth="375.0" />
                      </children></AnchorPane>
                </content>
           </Tab>
