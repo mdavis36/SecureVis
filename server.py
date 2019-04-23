@@ -157,8 +157,8 @@ def new_client(conn,addr, objR):
 
     ROOM_NAME = str(conn.recv(BUFFER_SIZE), 'utf-8');
     msgHandler = MsgHandler()
-
-
+    
+    stream_video = False
     streamin_frame_data = False
     triggered_active = False
     conn.setblocking(0) 
@@ -172,7 +172,7 @@ def new_client(conn,addr, objR):
             conn.send(str.encode(str(threadCount) + "\n"))
         elif "GET STREAM" in ROOM_NAME:
             with room_cmd_queue_lock:
-                test_name = ROOM_NAME.split("GET STREAM ")[1]
+                test_name = ROOM_NAME.split("GET STREAM ")[1][:-1]
                 print(test_name)
                 if test_name in room_cmd_queue:
                     room_cmd_queue[test_name].append(ROOM_NAME) 
@@ -192,7 +192,6 @@ def new_client(conn,addr, objR):
         #with room_cmd_queue_lock:
         #    room_cmd_queue[ROOM_NAME]=[]
 
-        cv2.namedWindow(ROOM_NAME, cv2.WINDOW_NORMAL)
 
         frame_count = 0
         last_frame_time = time.time()
@@ -240,7 +239,9 @@ def new_client(conn,addr, objR):
                     print(strmsg)
                     if "CLOSING" in strmsg:
                         print ("Closing Connetion to", strmsg.split(" ")[1:])
-                        cv2.destroyWindow(ROOM_NAME)
+                        if stream_video:
+                            cv2.destroyWindow(ROOM_NAME)
+                        
                         threadCount -= 1
                         room_list.remove(ROOM_NAME)
 
@@ -253,11 +254,26 @@ def new_client(conn,addr, objR):
                     outputVid.release()
                     outputVid = None
 
-            cv2.imshow(ROOM_NAME,frame)
+            cmd = ""
+            with room_cmd_queue_lock:
+                if ROOM_NAME in room_cmd_queue:
+                    cmd_list = room_cmd_queue[ROOM_NAME]
+                    if len(room_cmd_queue[ROOM_NAME]) > 0:
+                        cmd = room_cmd_queue[ROOM_NAME].pop()
+            
+            if cmd != "":
+                if "STREAM" in cmd:
+                    stream_video = True
+
+
+            if stream_video:
+                cv2.namedWindow(ROOM_NAME, cv2.WINDOW_NORMAL)
+                cv2.imshow(ROOM_NAME,frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 #conn.close()
                 cv2.destroyWindow(ROOM_NAME)
+                stream_video = False
                 #print ("Closing Connetion to ", ROOM_NAME)
                 #threadCount -= 1
                 #break
