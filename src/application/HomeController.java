@@ -118,8 +118,9 @@ public class HomeController implements Initializable {
     	streamingPage.getChildren().clear();
     	try {
 			connect = new Communication(GUI + GET_ROOMS);
-			String numberRoomsString = connect.getReturnMessage();			
-			int numRooms = Integer.getInteger(numberRoomsString);			
+			String numberRoomsString = connect.getReturnMessage();
+			System.out.println(numberRoomsString);
+			int numRooms = Integer.parseInt(numberRoomsString);
 			generateRooms(numRooms);
 		} catch (ClassNotFoundException | IOException e) {
 			Text error = new Text("Cannot connect to master system");

@@ -22,7 +22,7 @@ import java.util.Scanner;
 // byte input streaam?
 public class Communication {
 	
-	private static final int PORT = 65432;
+	private static final int PORT = 1153;
 	private static final int HEADER_SIZE = 16;
 	
 	
@@ -37,7 +37,7 @@ public class Communication {
 	
 	public Communication(String messageToSend) throws UnknownHostException, IOException, ClassNotFoundException {
 		// IntetAddress.getByName(null) associates server with local IP
-		endpoint = new InetSocketAddress(InetAddress.getLocalHost(),PORT);
+		endpoint = new InetSocketAddress(InetAddress.getByName("192.168.0.24"),PORT);
 		connection = new Socket();
 		waitForConnection();
 		setUpStreams();
