@@ -47,13 +47,17 @@ public class HomeController implements Initializable {
 		
 		// video slider functionality 
 	    videoPlayer.currentTimeProperty().addListener(new InvalidationListener() {
+	    	
+	    	@Override
 			public void invalidated(Observable o) {
 	    		updateSliderValue();
 			} 
 	    }); 
 
 	    // slider jumping event listener
-	    videoSlider.valueProperty().addListener(new InvalidationListener() { 
+	    videoSlider.valueProperty().addListener(new InvalidationListener() {
+	    	
+	    	@Override
 	        public void invalidated(Observable o) 
 	        { 
 	            if (videoSlider.isPressed()) {
@@ -79,7 +83,7 @@ public class HomeController implements Initializable {
 	@FXML // restart current video
 	public void restartVideo() {
 		videoPlayer.seek(videoPlayer.getStartTime());
-		videoPlayer.stop();
+		// videoPlayer.stop();
 	}    
 	 
     public void updateSliderValue() 
