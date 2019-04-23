@@ -21,7 +21,6 @@ import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 import main.Communication;
-import main.StreamingPage;
 import main.StreamingPageRow;
 
 public class HomeController implements Initializable {
@@ -127,11 +126,10 @@ public class HomeController implements Initializable {
 			streamingPage.getChildren().add(error);
 		}
     }
+    
     private void generateRooms(int numRooms) {
 		for (int i = 0; i < numRooms; i++) {
-			streamingPage.getChildren().add(new StreamingPageRow("TEST",5));
-		}
-		
-	}
-   
+			streamingPage.getChildren().add(new StreamingPageRow("TEST", 5));
+		}		
+	}   
 }
