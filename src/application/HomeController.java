@@ -116,8 +116,8 @@ public class HomeController implements Initializable {
     	try {
 			connect = new Communication(GUI + GET_ROOMS);
 			String numberRoomsString = connect.getReturnMessage();
-			
-			int numRooms = Integer.getInteger(numberRoomsString);
+			System.out.println(numberRoomsString);
+			int numRooms = Integer.parseInt(numberRoomsString);
 			
 			generateRooms(numRooms);
 		} catch (ClassNotFoundException | IOException e) {
