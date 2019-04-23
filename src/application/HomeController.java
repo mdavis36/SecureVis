@@ -28,5 +28,6 @@ public class HomeController {
 	@FXML // restart current video
 	public void restartVideo() {
 		videoPlayer.seek(videoPlayer.getStartTime());
+		videoPlayer.play();
 	}
 }
