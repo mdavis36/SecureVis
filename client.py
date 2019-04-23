@@ -10,7 +10,7 @@ import sys
 
 HOST ='192.168.0.24'
 PORT = 1110
-VIDFILE_NAME = "testFootage/test480.mp4"
+VIDFILE_NAME = "testFootage/test1_360p"
 STRUCT_ARG = "I"
 ROOM_NAME = str(sys.argv[1])
 
@@ -26,7 +26,8 @@ def exit_handler(s, cap):
 # Set up socket and connect to server.
 s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
 s.connect((HOST,int(sys.argv[2])))
-s.sendall(str.encode(ROOM_NAME));
+#s.sendall(struct.pack(STRUCT_ARG, len(str.encode(ROOM_NAME))),str.encode(ROOM_NAME));
+s.sendall(str.encode(ROOM_NAME))
 
 fgbg = cv2.createBackgroundSubtractorMOG2(100, 16, False)
 
@@ -40,7 +41,7 @@ atexit.register(exit_handler, s, cap)
 
 while ret:
     #ret,frame = cap.read()
-    frame = cv2.resize(frame, (320, 240))
+    frame = cv2.resize(frame, (360, 240))
     fgmask = fgbg.apply(frame)
     count = np.count_nonzero(fgmask)
 
@@ -49,8 +50,18 @@ while ret:
     if (count > 1000):
         #want to send the whole buffer at once
         try:
+            s.settimeout(None)
             s.sendall(struct.pack(STRUCT_ARG, len(data))+data)
         except:
             print ("SENDING FAILED")
+        
+        s.settimeout(0.003)
+        try:
+            msg = str(s.recv(4096), 'utf-8')
+            print(msg)
+        except:
+            pass
+            
+
     ret,frame = cap.read()
 
