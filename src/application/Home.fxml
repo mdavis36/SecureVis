@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.media.*?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.BorderPane?>
+
+<BorderPane prefHeight="675.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.HomeController">
+   <center>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
+        <tabs>
+          <Tab text="Streaming">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+            </content>
+          </Tab>
+          <Tab text="Video Playback">
+               <content>
+                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                     <children>
+                        <MediaView fx:id="videoView" fitHeight="600.0" fitWidth="600.0" layoutY="36.0" />
+                        <ComboBox layoutY="5.0" prefWidth="200.0" promptText="Room" />
+                        <ComboBox layoutX="400.0" layoutY="5.0" prefWidth="200.0" promptText="Date" />
+                        <Button fx:id="playButton" layoutX="214.0" layoutY="5.0" mnemonicParsing="false" onAction="#playVideo" text="Play" />
+                        <Button fx:id="pauseButton" layoutX="261.0" layoutY="5.0" mnemonicParsing="false" onAction="#pauseVideo" text="Pause" />
+                        <Button fx:id="restartButton" layoutX="320.0" layoutY="5.0" mnemonicParsing="false" onAction="#restartVideo" text="Restart" />
+                     </children></AnchorPane>
+               </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+   </center>
+</BorderPane>
