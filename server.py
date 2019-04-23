@@ -38,7 +38,7 @@ class ObjRecognition:
             'model':'cfg/yolov1.cfg',
             'load':'bin/yolov1.weights',
             'threshold':0.045,
-            'gpu':1.0
+            'gpu':0.7
         }
 
         self.tfnet = TFNet(self.opt)
@@ -225,7 +225,7 @@ def new_client(conn,addr, objR):
                     frame = next_msg.frame_data
                     frame = cv2.resize(frame,(1280,960))
 
-                    if (PERFORM_RECOGNITION and frame_count % 10 == 1):
+                    if (PERFORM_RECOGNITION and frame_count % 1 == 0):
                         frame, res = objR.recog(frame)
                         if res:
                             last_trigger_time = time.time()
