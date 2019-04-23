@@ -1,5 +1,5 @@
 #/usr/bin/python
-
+import threading
 import atexit
 import socket
 import cv2
@@ -24,6 +24,11 @@ MSG_DEF_SZ = 0
 STRUCT_ARG = "I"
 PERFORM_RECOGNITION = True
 
+threadCount = 0
+room_list = []
+
+room_cmd_queue = {}
+room_cmd_queue_lock = threading.Lock()
 
 #==============================================================================
 
@@ -90,7 +95,10 @@ class Message:
             self.frame_data = pickle.loads(raw_data[MSG_DEF_SZ:], encoding='latin1')
             self.msg_data = raw_data[:MSG_DEF_SZ]
         else:
-            self.msg_data = raw_data 
+            self.msg_data = pickle.loads(raw_data[MSG_DEF_SZ:], encoding='latin1')
+        
+
+
         
 
 
@@ -143,24 +151,56 @@ def exit_handler(s):
 
 
 def new_client(conn,addr, objR):
+    global threadCount
+    global room_list
+    global room_cmd_queue
+
     ROOM_NAME = str(conn.recv(BUFFER_SIZE), 'utf-8');
     msgHandler = MsgHandler()
+
 
     streamin_frame_data = False
     triggered_active = False
     conn.setblocking(0) 
 
     if ("GUI" in ROOM_NAME):
-        conn.send((threading.active_count()-2) +"\n")
+        if "GET ROOM_NAMES" in ROOM_NAME:
+            print(",".join(room_list))
+            conn.send(str.encode(",".join(room_list) + "\n"))
+        elif "GET ROOM_COUNT" in ROOM_NAME:
+            print(threadCount)
+            conn.send(str.encode(str(threadCount) + "\n"))
+        elif "GET STREAM" in ROOM_NAME:
+            with room_cmd_queue_lock:
+                test_name = ROOM_NAME.split("GET STREAM ")[1]
+                print(test_name)
+                if test_name in room_cmd_queue:
+                    room_cmd_queue[test_name].append(ROOM_NAME) 
+                else:
+                    room_cmd_queue[test_name] = [ROOM_NAME] 
+                    
+                print(room_cmd_queue)
+            conn.send(str.encode("Opening Stream.\n"))
+        else:
+            print ("REQUEST ERROR : ", ROOM_NAME)
+        #conn.send(str.encode(str(threading.active_count()-2) +"\n"))
     else:
         print (ROOM_NAME)
+        room_list.append(ROOM_NAME)
 
+        threadCount += 1
+        #with room_cmd_queue_lock:
+        #    room_cmd_queue[ROOM_NAME]=[]
+
+        cv2.namedWindow(ROOM_NAME, cv2.WINDOW_NORMAL)
 
         frame_count = 0
         last_frame_time = time.time()
         last_trigger_time = time.time()
         frame = np.zeros( (960, 1280, 3), dtype=np.uint8)
         while True:
+
+
             next_msg = msgHandler.getNextMsg(conn)
 
             if next_msg:
@@ -194,8 +234,17 @@ def new_client(conn,addr, objR):
                     if streamin_frame_data:  
                         outputVid.write(frame)
                         outputVid.write(frame)
+                else:
+                    print("PURE MSG")
+                    strmsg = next_msg.msg_data
+                    print(strmsg)
+                    if "CLOSING" in strmsg:
+                        print ("Closing Connetion to", strmsg.split(" ")[1:])
+                        cv2.destroyWindow(ROOM_NAME)
+                        threadCount -= 1
+                        room_list.remove(ROOM_NAME)
 
-            if (time.time() - last_frame_time >= 10):
+            if(time.time() - last_frame_time >= 10):
                 frame = np.zeros((960, 1280, 3), dtype=np.uint8)
                 if streamin_frame_data:
                     streamin_frame_data = False
@@ -207,9 +256,11 @@ def new_client(conn,addr, objR):
             cv2.imshow(ROOM_NAME,frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):
-                conn.close()
+                #conn.close()
                 cv2.destroyWindow(ROOM_NAME)
-                break
+                #print ("Closing Connetion to ", ROOM_NAME)
+                #threadCount -= 1
+                #break
         
 
 #-------------------MAIN EXECUTION-------------------
@@ -217,9 +268,10 @@ def main():
     s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((HOST,int(sys.argv[1])))
-    s.listen(10)
-    
-    objR = ObjRecognition()
+    s.listen(5)
+   
+    objR = None
+    if PERFORM_RECOGNITION: objR = ObjRecognition()
     atexit.register(exit_handler, s)
 
     print ('Socket is now listening')
