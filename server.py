@@ -14,41 +14,82 @@ import time
 from enum import Enum
 from darkflow.net.build import TFNet
 
-opt = {        
-    'model':'cfg/yolov1.cfg',
-    'load':'bin/yolov1.weights',
-    'threshold':0.045,
-    'gpu':1.0
-}
 
-tfnet = TFNet(opt)
-cols = [tuple(255 * np.random.rand(3)) for i in range(5)]
+#==============================================================================
 
 HOST = socket.gethostbyname('0.0.0.0')#'192.168.0.24'
 PORT = int(sys.argv[1])
 BUFFER_SIZE = 4096
-MSG_DEF_SZ = 32
+MSG_DEF_SZ = 0
 STRUCT_ARG = "I"
 PERFORM_RECOGNITION = True
 
 
 #==============================================================================
 
+class ObjRecognition:
+    def __init__(self):
+        self.opt = {        
+            'model':'cfg/yolov1.cfg',
+            'load':'bin/yolov1.weights',
+            'threshold':0.045,
+            'gpu':1.0
+        }
+
+        self.tfnet = TFNet(self.opt)
+
+        self.cols = [tuple(255 * np.random.rand(3)) for i in range(5)]
+
+    def recog(self, frame, triggerables = ('person')):
+        res = self.tfnet.return_predict(frame)
+        for c, r in zip(self.cols, res):
+            tl = (r['topleft']['x'], r['topleft']['y'])
+            br = (r['bottomright']['x'], r['bottomright']['y'])
+            label = r['label']
+            if label == triggerables:
+                frame = cv2.rectangle(frame, tl, br, c, 7)
+                frame = cv2.putText(frame, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
+        return frame
+
+
+
+
+#==============================================================================
+
+
+
+
+#==============================================================================
 
 class MsgType(Enum):
+    NULL_MSG = -1
     PURE_MSG = 0
     MOTION_FRAME = 1
     TRIGGER_FRAME = 2
 
+
+
+
 class Message:
     def __init__(self, raw_data, msg_size = MSG_DEF_SZ, msg_type = MsgType.PURE_MSG):
-        self.data = raw_data
         self.size = msg_size
         self.type = msg_type
+        self.msg_data = b""
+        self.frame_data = b""
+        self.room = -1
+        self.cam  = -1
+
+        self.data = raw_data
+        if self.type != MsgType.PURE_MSG:
+            self.frame_data = pickle.loads(raw_data[MSG_DEF_SZ:], encoding='latin1')
+            self.msg_data = raw_data[:MSG_DEF_SZ]
+        else:
+            self.msg_data = raw_data 
+        
+
 
 
 class MsgHandler:
-    data = b''
 
     def __init__(self):
         self.data = b""
@@ -56,9 +97,15 @@ class MsgHandler:
 
     def getNextMsg(self, conn):
         # get the size of the data being sent over
+        conn.settimeout(1.0)
+
         while len(self.data) < self.packet_size:
-            new_data = conn.recv(BUFFER_SIZE)
+            try : 
+                new_data = conn.recv(BUFFER_SIZE)
+            except:
+                return None
             self.data += new_data
+
 
         packed_msg_size = self.data[:self.packet_size]
         self.data = self.data[self.packet_size:]
@@ -87,12 +134,14 @@ def exit_handler(s):
     cv2.destroyAllWindows()
 
 
-def new_client(conn,addr):
-    
+
+
+def new_client(conn,addr, objR):
     ROOM_NAME = str(conn.recv(BUFFER_SIZE), 'utf-8');
     msgHandler = MsgHandler()
 
-
+    streamin_frame_data = False
+    conn.setblocking(0) 
 
     if ("GUI" in ROOM_NAME):
         conn.send((threading.active_count()-2) +"\n")
@@ -101,41 +150,41 @@ def new_client(conn,addr):
 
         now = datetime.datetime.now()
         #dateAndTime = now.strftime("%Y%m%d_%H%M")
-        data = b""
-        
         # Packet size will be no larger than the size of largest unsigned LONG value
         #fourcc = cv2.VideoWriter_fourcc(*'avc1')
         #outputVid = cv2.VideoWriter(str(ROOM_NAME, "utf-8") + "_"  +dateAndTime + "_output.avi",fourcc,20.0,(640,480))
 
         frame_count = 0
         last_frame_time = time.time()
-
-
+        frame = np.zeros( (1280, 960, 3), dtype=np.uint8)
         while True:
             next_msg = msgHandler.getNextMsg(conn)
 
-            if (next_msg.type == MsgType.MOTION_FRAME):
-                frame_count += 1 
-                print("Frame Data : ", frame_count)
-                last_frame_time = time.time()
+            if next_msg:
+                if (next_msg.type != MsgType.PURE_MSG):
+                    frame_count += 1 
+                    if not streamin_frame_data:
+                        streamin_frame_data = True 
+                        print("Streaming Frame Data")
 
-                # Handle Frame Data Mesage
-                frame = pickle.loads(next_msg.data, encoding='latin1')
+                    last_frame_time = time.time()
 
-                frame = cv2.resize(frame,(1280,960))
-                if (PERFORM_RECOGNITION and frame_count % 10 == 1):
-                    res = tfnet.return_predict(frame)
-                    for c, r in zip(cols, res):
-                        tl = (r['topleft']['x'], r['topleft']['y'])
-                        br = (r['bottomright']['x'], r['bottomright']['y'])
-                        label = r['label']
-                        if label == 'person':
-                            frame = cv2.rectangle(frame, tl, br, c, 7)
-                            frame = cv2.putText(frame, label, tl, cv2.FONT_HERSHEY_COMPLEX, 1, (0,0,0), 2)
-            #print(time.time() - last_frame_time )
+                    # Handle Frame Data Mesage
+                    frame = next_msg.frame_data
+                    frame = cv2.resize(frame,(1280,960))
 
-            #if (time.time() - last_frame_time >= 3):
-            #    frame = np.zeros(frame.size(), dtype=np.uint8)
+                    if (PERFORM_RECOGNITION and frame_count % 10 == 1):
+                        frame = objR.recog(frame)
+
+
+
+
+            if (time.time() - last_frame_time >= 3):
+                frame = np.zeros((960, 1280, 3), dtype=np.uint8)
+                if streamin_frame_data:
+                    streamin_frame_data = False
+                    print("Stopped Streaming Frame Data")
+                    print(time.time() - last_frame_time )
 
             cv2.imshow(ROOM_NAME,frame)
             #outputVid.write(frame)
@@ -152,13 +201,15 @@ def main():
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((HOST,int(sys.argv[1])))
     s.listen(10)
-    print ('Socket is now listening')
-
+    
+    objR = ObjRecognition()
     atexit.register(exit_handler, s)
+
+    print ('Socket is now listening')
 
     while True:
         conn, addr = s.accept()
-        _thread.start_new_thread(new_client,(conn,addr));
+        _thread.start_new_thread(new_client,(conn,addr, objR));
 
 
 if __name__ == "__main__" : main()
