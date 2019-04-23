@@ -13,6 +13,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
@@ -31,6 +32,8 @@ public class HomeController implements Initializable {
 	@FXML private MediaView videoView;
 	@FXML private Slider videoSlider;
 	@FXML private VBox streamingPage;
+	@FXML private ComboBox<String> rooms;
+	@FXML private ComboBox<String> dates;
 	private MediaPlayer videoPlayer;
 	private Media video;
 	
@@ -115,10 +118,8 @@ public class HomeController implements Initializable {
     	streamingPage.getChildren().clear();
     	try {
 			connect = new Communication(GUI + GET_ROOMS);
-			String numberRoomsString = connect.getReturnMessage();
-			
-			int numRooms = Integer.getInteger(numberRoomsString);
-			
+			String numberRoomsString = connect.getReturnMessage();			
+			int numRooms = Integer.getInteger(numberRoomsString);			
 			generateRooms(numRooms);
 		} catch (ClassNotFoundException | IOException e) {
 			Text error = new Text("Cannot connect to master system");
@@ -131,5 +132,21 @@ public class HomeController implements Initializable {
 		for (int i = 0; i < numRooms; i++) {
 			streamingPage.getChildren().add(new StreamingPageRow("TEST", 5));
 		}		
-	}   
+	}
+    
+    @FXML // display rooms for streaming
+    public void displayRoomsForVideo() {
+    	Communication connect;
+    	// rooms.
+    	try {
+			connect = new Communication(GUI + GET_ROOMS);			
+			String numberRoomsString = connect.getReturnMessage();			
+			int numRooms = Integer.getInteger(numberRoomsString);			
+			generateRooms(numRooms);
+		} catch (ClassNotFoundException | IOException e) {
+			Text error = new Text("Cannot connect to master system");
+			//generateRooms(4);
+			streamingPage.getChildren().add(error);
+		}
+    }
 }
