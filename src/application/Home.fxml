@@ -6,32 +6,12 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.BorderPane?>
 
-<BorderPane prefHeight="675.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.HomeController">
+<BorderPane prefHeight="300.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.HomeController">
    <center>
       <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
         <tabs>
-          <Tab onSelectionChanged="#displayRooms" text="Streaming">
-            <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                     <children>
-                        <VBox fx:id="streamingPage" layoutX="2.0" onKeyPressed="#displayRooms" prefHeight="641.0" prefWidth="600.0" />
-                     </children></AnchorPane>
-            </content>
-          </Tab>
-          <Tab text="Video Playback">
-               <content>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0">
-                     <children>
-                        <MediaView fx:id="videoView" fitHeight="600.0" fitWidth="600.0" layoutY="36.0" />
-                        <ComboBox layoutY="5.0" prefWidth="200.0" promptText="Room" />
-                        <ComboBox layoutX="400.0" layoutY="5.0" prefWidth="200.0" promptText="Date" />
-                        <Button fx:id="playButton" layoutX="14.0" layoutY="589.0" mnemonicParsing="false" onAction="#playVideo" text="Play" />
-                        <Button fx:id="pauseButton" layoutX="61.0" layoutY="589.0" mnemonicParsing="false" onAction="#pauseVideo" text="Pause" />
-                        <Button fx:id="restartButton" layoutX="120.0" layoutY="589.0" mnemonicParsing="false" onAction="#restartVideo" text="Restart" />
-                        <Slider fx:id="videoSlider" layoutX="200.0" layoutY="596.0" prefHeight="18.0" prefWidth="375.0" />
-                     </children></AnchorPane>
-               </content>
-          </Tab>
+          <Tab onSelectionChanged="#displayRooms" text="Streaming" />
+          <Tab text="Video Playback" />
         </tabs>
       </TabPane>
    </center>
