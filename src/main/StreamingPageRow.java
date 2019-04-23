@@ -9,20 +9,21 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.Text;
 
 
 // this layout is populated as rows in the streaming page view
 public class StreamingPageRow extends HBox implements EventHandler<ActionEvent> {
 
 	
-	private TextField name;
+	private Text name;
 	private int numCameras;
 	
 	private Button viewStream;
 	private ChoiceBox cameras;
 	
 	public StreamingPageRow(String roomName, int numCameras) {
-		name = new TextField(roomName);
+		name = new Text(roomName);
 		this.numCameras = numCameras;
 		name.setId("name");
 		

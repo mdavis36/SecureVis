@@ -123,6 +123,7 @@ public class HomeController implements Initializable {
 			generateRooms(numRooms);
 		} catch (ClassNotFoundException | IOException e) {
 			Text error = new Text("Cannot connect to master system");
+			//generateRooms(4);
 			streamingPage.getChildren().add(error);
 		}
     }
