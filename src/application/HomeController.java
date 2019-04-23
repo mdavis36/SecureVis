@@ -1,6 +1,7 @@
 package application;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -17,7 +18,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.text.Text;
 import javafx.util.Duration;
+import main.Communication;
 import main.StreamingPage;
 import main.StreamingPageRow;
 
@@ -31,6 +34,9 @@ public class HomeController implements Initializable {
 	@FXML private VBox streamingPage;
 	private MediaPlayer videoPlayer;
 	private Media video;
+	
+	private static final String GET_ROOMS = "Rooms";
+	private static final String GUI = "GUI";
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -106,8 +112,19 @@ public class HomeController implements Initializable {
     
     @FXML // display rooms for streaming
     public void displayRooms() {
+    	Communication connect;
     	streamingPage.getChildren().clear();
-    	generateRooms(5);
+    	try {
+			connect = new Communication(GUI + GET_ROOMS);
+			String numberRoomsString = connect.getReturnMessage();
+			
+			int numRooms = Integer.getInteger(numberRoomsString);
+			
+			generateRooms(numRooms);
+		} catch (ClassNotFoundException | IOException e) {
+			Text error = new Text("Cannot connect to master system");
+			streamingPage.getChildren().add(error);
+		}
     }
     private void generateRooms(int numRooms) {
 		for (int i = 0; i < numRooms; i++) {
