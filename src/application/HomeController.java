@@ -25,6 +25,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 import main.Communication;
 import main.StreamingPageRow;
+import main.VideoContainerLayout;
 
 public class HomeController implements Initializable, EventHandler<ActionEvent> {
 	
@@ -33,7 +34,7 @@ public class HomeController implements Initializable, EventHandler<ActionEvent> 
 	
 	//@FXML private ComboBox<String> dates;
 	@FXML private DatePicker datePicker;
-	@FXML private Button dateSearch;
+	//@FXML private Button dateSearch;
 	
 	private ComboBox<String> rooms;
 	private Button searchRooms;
@@ -102,54 +103,13 @@ public class HomeController implements Initializable, EventHandler<ActionEvent> 
     	
     	if (date != null) {
     	
-    	String dateFormat = parseDate(date);
-    	dateOfInterest = dateFormat;
-    	
-    	ArrayList<String> roomsByDate = findRoomsByDate(dateFormat);
-    	
-    	HBox hbox = new HBox();
-    	
-    	rooms = new ComboBox<String>();
-    	this.rooms.getItems().addAll(roomsByDate);
-    	
-    	searchRooms = new Button("Query");
-    	searchRooms.setId("searchRooms");
-    	searchRooms.setOnAction(this);
-    	
-    	hbox.getChildren().addAll(rooms,searchRooms);
-    	videoPage.getChildren().add(hbox);
+    		VideoContainerLayout vidContainer = new VideoContainerLayout(DirectoryUtil.parseDate(date));
+    		videoPage.getChildren().add(vidContainer);
     	}
     	
     }
     
-    private ArrayList<String> findRoomsByDate(String dateFormat) {
-		File directory = new File(VIDEO_DIRECTORY);
-		File[] filesInDir = directory.listFiles();
-		ArrayList<String> rooms = new ArrayList<String>();
-		for (int i = 0; i < filesInDir.length; i++) {
-			if (filesInDir[i].getName().contains(dateFormat)) {
-				String roomName = filesInDir[i].getName().split("_")[0];
-				if (!(rooms.contains(roomName))) {
-					rooms.add(roomName);
-				}
-			}
-		}
-		return rooms;
-	}
-
-	private String parseDate(LocalDate date) {
-		String rtDate = "" + date.getYear(); 
-		if(date.getMonthValue() < 10) {
-			rtDate += "0" + date.getMonthValue();
-		} else {
-			rtDate += date.getMonthValue();
-		}
-		 rtDate	+= date.getDayOfMonth();
-		 
-		 return rtDate;
-		
-		
-	}
+  
 
 	public void generateRoomsForVideo(String[] roomNames) {
     	this.rooms.getItems().clear();
@@ -167,7 +127,7 @@ public class HomeController implements Initializable, EventHandler<ActionEvent> 
 	public void handle(ActionEvent event) {
 		if(event.getSource() instanceof Button) {
 			Button clicked = (Button) event.getSource();
-			
+			/*
 			if (clicked.getId().equals("searchRooms")) {
 				ObservableList<String> list = rooms.getItems();
 				
@@ -175,21 +135,10 @@ public class HomeController implements Initializable, EventHandler<ActionEvent> 
 					listFileNames(rName,dateOfInterest);
 				}
 				
-			}
+			} */
 		}
 		
 	}
 
-	private void listFileNames(String rName, String date) {
-		File directory = new File(VIDEO_DIRECTORY);
-		File[] filesInDir = directory.listFiles();
-		ArrayList<String> rooms = new ArrayList<String>();
-		for (int i = 0; i < filesInDir.length; i++) {
-			if (filesInDir[i].getName().contains(date) && filesInDir[i].getName().contains(rName)) {
-				Text name = new Text(filesInDir[i].getName());
-				videoPage.getChildren().add(name);
-			}
-		}
-		
-	}
+	
 }

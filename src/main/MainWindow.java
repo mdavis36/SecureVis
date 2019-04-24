@@ -8,7 +8,7 @@ import javafx.stage.*;
 
 
 
-public class Window extends Application implements EventHandler<ActionEvent> {
+public class MainWindow extends Application implements EventHandler<ActionEvent> {
 
 	// represents the entire window
 	private Stage window;
@@ -26,8 +26,8 @@ public class Window extends Application implements EventHandler<ActionEvent> {
 		window = primaryStage;
 		
 		// generate a videoPage screen
-		VideoLayout videoLayout = new VideoLayout();
-		videoPage = new Scene(videoLayout);
+		//VideoLayout videoLayout = new VideoLayout();
+		//videoPage = new Scene(videoLayout);
 		
 		window.setScene(videoPage);
 		window.show();
