@@ -46,11 +46,11 @@ public class HomeController implements Initializable {
     	streamingPage.getChildren().clear();
     	try {
 			connect = new Communication(GUI + GET_ROOM_NAMES);
-			String[] rooms = parseRooms(connect.getReturnMessage());
-			//String numberRoomsString = connect.getReturnMessage();
-			//System.out.println(numberRoomsString);
-			//int numRooms = Integer.parseInt(numberRoomsString);
-			generateRooms(rooms);
+//			String[] rooms = parseRooms(connect.getReturnMessage());
+//			//String numberRoomsString = connect.getReturnMessage();
+//			//System.out.println(numberRoomsString);
+//			//int numRooms = Integer.parseInt(numberRoomsString);
+//			generateRooms(rooms);
 		} catch (ClassNotFoundException | IOException e) {
 			Text error = new Text("Cannot connect to master system");
 			//generateRooms(4);
@@ -75,14 +75,13 @@ public class HomeController implements Initializable {
     @FXML // display rooms for video
     public void displayRoomsForVideo() {
     	Communication connect;
-    	// rooms.
     	try {
 			connect = new Communication(GUI + GET_ROOMS);			
-			String numberRoomsString = connect.getReturnMessage();			
-			int numRooms = Integer.getInteger(numberRoomsString);			
-			//generateRooms(numRooms);
+			String[] rooms = parseRooms(connect.getReturnMessage());
+			String[] test = { "1", "2", "3" };
+			generateRoomsForVideo(test);
 		} catch (ClassNotFoundException | IOException e) {
-			Text error = new Text("Cannot connect to master system");
+			Text error = new Text("Cannot connect to master system.");
 			//generateRooms(4);
 			streamingPage.getChildren().add(error);
 		}
@@ -91,6 +90,9 @@ public class HomeController implements Initializable {
     public void generateRoomsForVideo(String[] roomNames) {
 		for (int i = 0; i < roomNames.length; i++) {
 			rooms.getItems().add(roomNames[i]);
-		}		
+		}
+		
+		
+		//rooms.setItems(listRoomNames);
 	}
 }
