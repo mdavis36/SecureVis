@@ -6,11 +6,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
-import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.binding.Bindings;
-import javafx.beans.property.DoubleProperty;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -44,7 +40,7 @@ public class HomeController implements Initializable {
 		
 	}	
     
-    @FXML // display rooms for streaming
+    @FXML // display rooms for streaming and video
     public void displayRooms() {
     	Communication connect;
     	streamingPage.getChildren().clear();
@@ -76,7 +72,7 @@ public class HomeController implements Initializable {
 	
 
     
-    @FXML // display rooms for streaming
+    @FXML // display rooms for video
     public void displayRoomsForVideo() {
     	Communication connect;
     	// rooms.
@@ -84,7 +80,7 @@ public class HomeController implements Initializable {
 			connect = new Communication(GUI + GET_ROOMS);			
 			String numberRoomsString = connect.getReturnMessage();			
 			int numRooms = Integer.getInteger(numberRoomsString);			
-			generateRooms(numRooms);
+			//generateRooms(numRooms);
 		} catch (ClassNotFoundException | IOException e) {
 			Text error = new Text("Cannot connect to master system");
 			//generateRooms(4);
@@ -92,9 +88,9 @@ public class HomeController implements Initializable {
 		}
     }
     
-    private void generateRooms(int numRooms) {
-		for (int i = 0; i < numRooms; i++) {
-			streamingPage.getChildren().add(new StreamingPageRow("TEST", 5));
+    public void generateRoomsForVideo(String[] roomNames) {
+		for (int i = 0; i < roomNames.length; i++) {
+			rooms.getItems().add(roomNames[i]);
 		}		
 	}
 }

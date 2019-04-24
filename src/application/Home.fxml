@@ -12,14 +12,15 @@
         <tabs>
           <Tab onSelectionChanged="#displayRooms" text="Streaming">
                <content>
-                  <AnchorPane prefHeight="200.0" prefWidth="200.0" />
+                  <VBox fx:id="streamingPage" onKeyPressed="#displayRooms" prefHeight="200.0" prefWidth="100.0" />
                </content></Tab>
           <Tab text="Video Playback">
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <ComboBox fx:id="rooms" layoutX="14.0" layoutY="14.0" prefWidth="150.0" promptText="Select Room" />
+                        <ComboBox fx:id="rooms" layoutX="14.0" layoutY="14.0" onAction="#displayRoomsForVideo" prefWidth="150.0" promptText="Select Room" />
                         <ComboBox fx:id="dates" layoutX="236.0" layoutY="14.0" prefWidth="150.0" promptText="Select Date" />
+                        <VBox layoutX="25.0" layoutY="59.0" prefHeight="202.0" prefWidth="400.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="59.0" />
                      </children>
                   </AnchorPane>
                </content></Tab>
