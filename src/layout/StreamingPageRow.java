@@ -1,8 +1,9 @@
-package main;
+package layout;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import application.Communication;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;

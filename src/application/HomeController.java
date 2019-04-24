@@ -23,9 +23,8 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import main.Communication;
-import main.StreamingPageRow;
-import main.VideoContainerLayout;
+import layout.StreamingPageRow;
+import layout.VideoContainerLayout;
 
 public class HomeController implements Initializable, EventHandler<ActionEvent> {
 	

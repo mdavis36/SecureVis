@@ -1,7 +1,8 @@
-package main;
+package layout;
 
 import java.io.IOException;
 
+import application.Communication;
 import javafx.scene.layout.VBox;
 
 public class StreamingPage extends VBox {

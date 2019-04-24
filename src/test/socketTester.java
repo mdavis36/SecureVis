@@ -3,7 +3,7 @@ package test;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
-import main.Communication;
+import application.Communication;
 
 public class socketTester {
 
