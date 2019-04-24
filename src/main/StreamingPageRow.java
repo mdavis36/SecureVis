@@ -11,6 +11,8 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 
+// create a method that queries all the room names; 
+// comma delimited list of room names
 
 // this layout is populated as rows in the streaming page view
 public class StreamingPageRow extends HBox implements EventHandler<ActionEvent> {

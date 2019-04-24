@@ -3,6 +3,7 @@ package application;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
@@ -39,6 +40,7 @@ public class HomeController implements Initializable {
 	
 	private static final String GET_ROOMS = "Rooms";
 	private static final String GUI = "GUI";
+	private static final String GET_ROOM_NAMES = "GET ROOM_NAMES";
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -117,11 +119,12 @@ public class HomeController implements Initializable {
     	Communication connect;
     	streamingPage.getChildren().clear();
     	try {
-			connect = new Communication(GUI + GET_ROOMS);
-			String numberRoomsString = connect.getReturnMessage();
-			System.out.println(numberRoomsString);
-			int numRooms = Integer.parseInt(numberRoomsString);
-			generateRooms(numRooms);
+			connect = new Communication(GUI + GET_ROOM_NAMES);
+			String[] rooms = parseRooms(connect.getReturnMessage());
+			//String numberRoomsString = connect.getReturnMessage();
+			//System.out.println(numberRoomsString);
+			//int numRooms = Integer.parseInt(numberRoomsString);
+			generateRooms(rooms);
 		} catch (ClassNotFoundException | IOException e) {
 			Text error = new Text("Cannot connect to master system");
 			//generateRooms(4);
@@ -129,9 +132,21 @@ public class HomeController implements Initializable {
 		}
     }
     
-    private void generateRooms(int numRooms) {
-		for (int i = 0; i < numRooms; i++) {
-			streamingPage.getChildren().add(new StreamingPageRow("TEST", 5));
+    private String[] parseRooms(String returnMessage) {
+		return returnMessage.split(",");
+	}
+
+	private void generateRooms(String[] rooms) {
+		
+		for (int i = 0; i < rooms.length; i++) {
+			streamingPage.getChildren().add(new StreamingPageRow(rooms[i], 1));
+		}		
+	}
+	
+	private void generateRooms(int num) {
+		
+		for (int i = 0; i < num; i++) {
+			streamingPage.getChildren().add(new StreamingPageRow(i + "", 1));
 		}		
 	}
     
