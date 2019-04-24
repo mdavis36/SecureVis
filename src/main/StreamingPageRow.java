@@ -18,7 +18,7 @@ import javafx.scene.text.Text;
 public class StreamingPageRow extends HBox implements EventHandler<ActionEvent> {
 
 	
-	private static final String  QUERY = "GET STREAM ";
+	private static final String  QUERY = "GUI GET STREAM ";
 	
 	private Text name;
 	private int numCameras;

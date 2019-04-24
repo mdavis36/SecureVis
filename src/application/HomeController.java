@@ -29,7 +29,7 @@ public class HomeController implements Initializable {
 	@FXML private ComboBox<String> dates;
 	
 	private static final String GET_ROOMS = "Rooms";
-	private static final String GUI = "GUI";
+	private static final String GUI = "GUI ";
 	private static final String GET_ROOM_NAMES = "GET ROOM_NAMES";
 	
 	@Override
@@ -46,11 +46,12 @@ public class HomeController implements Initializable {
     	streamingPage.getChildren().clear();
     	try {
 			connect = new Communication(GUI + GET_ROOM_NAMES);
-//			String[] rooms = parseRooms(connect.getReturnMessage());
+			
+		String[] rooms = parseRooms(connect.getReturnMessage());
 //			//String numberRoomsString = connect.getReturnMessage();
 //			//System.out.println(numberRoomsString);
 //			//int numRooms = Integer.parseInt(numberRoomsString);
-//			generateRooms(rooms);
+		generateRooms(rooms);
 		} catch (ClassNotFoundException | IOException e) {
 			Text error = new Text("Cannot connect to master system");
 			//generateRooms(4);
@@ -66,6 +67,7 @@ public class HomeController implements Initializable {
 	private void generateRooms(String[] rooms) {
 		
 		for (int i = 0; i < rooms.length; i++) {
+			System.out.println(rooms[i]);
 			streamingPage.getChildren().add(new StreamingPageRow(rooms[i], 1));
 		}		
 	}
