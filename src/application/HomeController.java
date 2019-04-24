@@ -27,6 +27,7 @@ import main.StreamingPageRow;
 public class HomeController implements Initializable {
 	
 	@FXML private VBox streamingPage;
+	@FXML private VBox videoPage;
 	@FXML private ComboBox<String> rooms;
 	@FXML private ComboBox<String> dates;
 	
