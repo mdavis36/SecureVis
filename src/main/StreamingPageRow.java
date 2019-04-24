@@ -78,4 +78,6 @@ public class StreamingPageRow extends HBox implements EventHandler<ActionEvent> 
 		Communication sendMessage = new Communication(QUERY + name.getText());
 		
 	}
+	
+	
 }

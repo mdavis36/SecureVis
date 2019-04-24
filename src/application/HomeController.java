@@ -85,10 +85,10 @@ public class HomeController implements Initializable {
     public void displayRoomsForVideo() {
     	Communication connect;
     	try {
-			connect = new Communication(GUI + GET_ROOM_COUNT);			
+			connect = new Communication(GUI + GET_ROOM_NAMES);			
 			String[] rooms = parseRooms(connect.getReturnMessage());
-			String[] test = { "1", "2", "3" };
-			generateRoomsForVideo(test);
+			//String[] test = { "1", "2", "3" };
+			generateRoomsForVideo(rooms);
 		} catch (ClassNotFoundException | IOException e) {
 			Text error = new Text("Cannot connect to master system.");
 			//generateRooms(4);
@@ -97,8 +97,11 @@ public class HomeController implements Initializable {
     }
     
     public void generateRoomsForVideo(String[] roomNames) {
+    	this.rooms.getItems().clear();
 		for (int i = 0; i < roomNames.length; i++) {
+			if (notAnEmptyString(roomNames[i])) {
 			rooms.getItems().add(roomNames[i]);
+			}
 		}
 		
 		
