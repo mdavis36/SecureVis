@@ -8,7 +8,7 @@ import javafx.scene.text.Text;
 
 public class DirectoryUtil {
 
-	private static final String VIDEO_DIRECTORY = "testFootage";
+	public static final String VIDEO_DIRECTORY = "testFootage";
 	
 	
 	// Returns files in video directory based on date and name

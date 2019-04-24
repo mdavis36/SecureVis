@@ -218,7 +218,7 @@ def new_client(conn,addr, objR):
             # Handle displaying a streamed view of the room
             #===================================================
             if stream_video:
-                cv2.namedWindow(ROOM_NAME, cv2.WINDOW_NORMAL)
+                cv2.namedWindow(ROOM_NAME, cv2.WINDOW_AUTOSIZE)
                 cv2.imshow(ROOM_NAME,frame)
 
             if cv2.waitKey(1) & 0xFF == ord('q'):

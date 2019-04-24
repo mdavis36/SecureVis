@@ -2,6 +2,7 @@ package main;
 
 import java.io.IOException;
 
+import application.DirectoryUtil;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Button;
@@ -44,9 +45,7 @@ public class VideoPageRow extends HBox implements EventHandler<ActionEvent> {
 	}
 
 	private void launchVLC() throws IOException {
-		Runtime.getRuntime().exec(VLC + roomName);
-		
-		
+		Runtime.getRuntime().exec(VLC + DirectoryUtil.VIDEO_DIRECTORY + "/" + roomName.getText());
 	}
 
 }
