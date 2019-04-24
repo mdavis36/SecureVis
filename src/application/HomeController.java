@@ -28,7 +28,7 @@ public class HomeController implements Initializable {
 	@FXML private ComboBox<String> rooms;
 	@FXML private ComboBox<String> dates;
 	
-	private static final String GET_ROOMS = "Rooms";
+	private static final String GET_ROOM_COUNT = "ROOM_COUNT";
 	private static final String GUI = "GUI ";
 	private static final String GET_ROOM_NAMES = "GET ROOM_NAMES";
 	
@@ -65,20 +65,27 @@ public class HomeController implements Initializable {
 	}
 
 	private void generateRooms(String[] rooms) {
-		
+		System.out.println(rooms.length + "name " + rooms[0]);
 		for (int i = 0; i < rooms.length; i++) {
 			System.out.println(rooms[i]);
+			if (notAnEmptyString(rooms[i])) {
 			streamingPage.getChildren().add(new StreamingPageRow(rooms[i], 1));
+			}
 		}		
 	}
 	
 
     
-    @FXML // display rooms for video
+    private boolean notAnEmptyString(String string) {
+		// TODO Auto-generated method stub
+		return !(string.equals(""));
+	}
+
+	@FXML // display rooms for video
     public void displayRoomsForVideo() {
     	Communication connect;
     	try {
-			connect = new Communication(GUI + GET_ROOMS);			
+			connect = new Communication(GUI + GET_ROOM_COUNT);			
 			String[] rooms = parseRooms(connect.getReturnMessage());
 			String[] test = { "1", "2", "3" };
 			generateRoomsForVideo(test);
