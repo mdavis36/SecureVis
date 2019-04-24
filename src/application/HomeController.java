@@ -26,14 +26,12 @@ import javafx.util.Duration;
 import layout.StreamingPageRow;
 import layout.VideoContainerLayout;
 
-public class HomeController implements Initializable, EventHandler<ActionEvent> {
+public class HomeController implements Initializable {
 	
 	@FXML private VBox streamingPage;
 	@FXML private VBox videoPage;
-	
-	//@FXML private ComboBox<String> dates;
 	@FXML private DatePicker datePicker;
-	//@FXML private Button dateSearch;
+
 	
 	private ComboBox<String> rooms;
 	private Button searchRooms;
@@ -59,15 +57,11 @@ public class HomeController implements Initializable, EventHandler<ActionEvent> 
     	
     	try {
 			connect = new Communication(GUI + GET_ROOM_NAMES);
+			String[] rooms = parseRooms(connect.getReturnMessage());
+			generateRooms(rooms);
 			
-		String[] rooms = parseRooms(connect.getReturnMessage());
-//			//String numberRoomsString = connect.getReturnMessage();
-//			//System.out.println(numberRoomsString);
-//			//int numRooms = Integer.parseInt(numberRoomsString);
-		generateRooms(rooms);
 		} catch (ClassNotFoundException | IOException e) {
 			Text error = new Text("Cannot connect to master system");
-			//generateRooms(4);
 			streamingPage.getChildren().add(error);
 		} 
 
@@ -96,48 +90,15 @@ public class HomeController implements Initializable, EventHandler<ActionEvent> 
 
 	@FXML // display rooms for video
     public void displayRoomsForVideo() {
-    	//Communication connect;
+		
 		videoPage.getChildren().clear();
     	LocalDate date = datePicker.getValue();
     	
     	if (date != null) {
-    	
     		VideoContainerLayout vidContainer = new VideoContainerLayout(DirectoryUtil.parseDate(date));
     		videoPage.getChildren().add(vidContainer);
     	}
     	
     }
-    
-  
-
-	public void generateRoomsForVideo(String[] roomNames) {
-    	this.rooms.getItems().clear();
-		for (int i = 0; i < roomNames.length; i++) {
-			if (notAnEmptyString(roomNames[i])) {
-			rooms.getItems().add(roomNames[i]);
-			}
-		}
-		
-		
-		//rooms.setItems(listRoomNames);
-	}
-
-	@Override
-	public void handle(ActionEvent event) {
-		if(event.getSource() instanceof Button) {
-			Button clicked = (Button) event.getSource();
-			/*
-			if (clicked.getId().equals("searchRooms")) {
-				ObservableList<String> list = rooms.getItems();
-				
-				for (String rName : list) {
-					listFileNames(rName,dateOfInterest);
-				}
-				
-			} */
-		}
-		
-	}
-
-	
+    	
 }
