@@ -17,6 +17,13 @@ ROOM_NAME = str(sys.argv[1])
 
 def exit_handler(s, cap):
     print("Closing connection and camera(s)")
+    try:
+        s.settimeout(None)
+        msg = "CLOSING " + ROOM_NAME
+        data = pickle.dumps(msg, protocol = 2)
+        s.sendall(struct.pack(STRUCT_ARG, len(data))+data)
+    except:
+        print ("FAILED TO SEND EXIT MSG")
     s.close()
     cv2.destroyAllWindows()
     cap.release()
