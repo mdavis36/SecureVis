@@ -18,6 +18,8 @@ import javafx.scene.text.Text;
 public class StreamingPageRow extends HBox implements EventHandler<ActionEvent> {
 
 	
+	private static final String  QUERY = "GET STREAM ";
+	
 	private Text name;
 	private int numCameras;
 	
@@ -73,7 +75,7 @@ public class StreamingPageRow extends HBox implements EventHandler<ActionEvent> 
 
 	
 	private void sendQuery() throws UnknownHostException, ClassNotFoundException, IOException {
-		Communication sendMessage = new Communication(name.getText()+cameras.getValue());
+		Communication sendMessage = new Communication(QUERY + name.getText());
 		
 	}
 }
