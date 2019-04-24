@@ -18,8 +18,8 @@
                <content>
                   <AnchorPane prefHeight="200.0" prefWidth="200.0">
                      <children>
-                        <ComboBox layoutX="14.0" layoutY="14.0" prefWidth="150.0" promptText="Select Room" />
-                        <ComboBox layoutX="236.0" layoutY="14.0" prefWidth="150.0" promptText="Select Date" />
+                        <ComboBox fx:id="rooms" layoutX="14.0" layoutY="14.0" prefWidth="150.0" promptText="Select Room" />
+                        <ComboBox fx:id="dates" layoutX="236.0" layoutY="14.0" prefWidth="150.0" promptText="Select Date" />
                      </children>
                   </AnchorPane>
                </content></Tab>
