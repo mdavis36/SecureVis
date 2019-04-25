@@ -33,10 +33,6 @@ public class HomeController implements Initializable {
 	@FXML private DatePicker datePicker;
 
 	
-	private ComboBox<String> rooms;
-	private Button searchRooms;
-	private String dateOfInterest;
-	
 	private static final String GET_ROOM_COUNT = "ROOM_COUNT";
 	private static final String GUI = "GUI ";
 	private static final String GET_ROOM_NAMES = "GET ROOM_NAMES";
