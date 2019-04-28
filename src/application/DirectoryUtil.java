@@ -56,4 +56,21 @@ public class DirectoryUtil {
 		}
 		return rooms;
 	}
+	
+	public static ArrayList<String> allDates() {
+		File directory = new File(VIDEO_DIRECTORY);
+		File[] filesInDir = directory.listFiles();
+		ArrayList<String> dates = new ArrayList<String>();
+		
+		for (File file : filesInDir) {
+			String[] split = file.getName().split("_");
+			if (split.length == 4) {
+				String date = split[1];
+				if (!dates.contains(date)) {
+					dates.add(date);
+				}
+			}
+		}
+		return dates;
+	}
 }

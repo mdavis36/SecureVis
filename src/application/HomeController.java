@@ -14,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DateCell;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.HBox;
@@ -22,6 +23,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.text.Text;
+import javafx.util.Callback;
 import javafx.util.Duration;
 import layout.StreamingPageRow;
 import layout.VideoContainerLayout;
@@ -43,10 +45,55 @@ public class HomeController implements Initializable {
 		// set file path for testing
 		String videoPath = new File("testFootage/test480.mp4").getAbsolutePath();
 		
+		setDatePickerColor();
+		
 		
 	}	
     
-    @FXML // display rooms for streaming and video
+    private void setDatePickerColor() {
+		ArrayList<LocalDate> dates = getLocalDate(DirectoryUtil.allDates());
+		
+			
+			datePicker.setDayCellFactory(new Callback<DatePicker, DateCell>() {
+				@Override
+				public DateCell call(DatePicker param) {
+					return new DateCell(){
+						@Override
+						public void updateItem(LocalDate item, boolean empty) {
+							super.updateItem(item, empty);
+
+							if (!empty && item != null) {
+								if(dates.contains(item)) {
+									this.setStyle("-fx-background-color: #8eb9ff");
+								}
+							}
+							
+								
+							
+						}
+					};
+				}
+			});
+		
+		
+	}
+
+	private ArrayList<LocalDate> getLocalDate(ArrayList<String> allDates) {
+		ArrayList<LocalDate> lDates = new ArrayList<LocalDate>();
+		for (String date : allDates) {
+			
+				int year = Integer.parseInt(date.substring(0, 4));
+				int month = Integer.parseInt(date.substring(4,6));
+				int day = Integer.parseInt(date.substring(6,date.length()));
+				
+				LocalDate cellDate = LocalDate.of(year, month, day);
+				lDates.add(cellDate);
+		
+	}
+		return lDates;
+	}
+
+	@FXML // display rooms for streaming and video
     public void displayRooms() {
     	Communication connect;
     	streamingPage.getChildren().clear();
