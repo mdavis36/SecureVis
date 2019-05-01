@@ -35,7 +35,13 @@ public class DirectoryUtil {
 		} else {
 			rtDate += date.getMonthValue();
 		}
-		 rtDate	+= date.getDayOfMonth();
+		
+		if (date.getDayOfMonth() < 10) {
+		 rtDate	+= "0" + date.getDayOfMonth();
+	
+		} else {
+			rtDate += date.getDayOfMonth();
+		}
 		 
 		 return rtDate;
 	
