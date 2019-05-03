@@ -5,31 +5,31 @@ A smart computer vision driven security system.
 
 Hardware Requirements
 
-  R-Pi - Edge Device
+    R-Pi - Edge Device
 
-    CPU : ARM Cortex-A53 1.4GHz
+      CPU : ARM Cortex-A53 1.4GHz
 
-    RAM : 1GB SRAM
+      RAM : 1GB SRAM
 
-    Wifi / Ethernet
+      Wifi / Ethernet
 
-  Master System
+    Master System
 
-    CPU : Intel i7-7700k 4.7 GHz
+      CPU : Intel i7-7700k 4.7 GHz
 
-    RAM : 32GB
+      RAM : 32GB
 
-    GPU : GTX 1080Ti
+      GPU : GTX 1080Ti
 
-  Network 
+    Network 
 
-    Protocol: TCP/IP
+      Protocol: TCP/IP
 
-  Cameras
+    Cameras
 
-    Logitech C270 - 720p @ 30fps
+      Logitech C270 - 720p @ 30fps
 
-    uvcvideo LKM compatible  
+      uvcvideo LKM compatible  
 
   Software Requirements
 
