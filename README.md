@@ -49,7 +49,7 @@ Hardware Requirements
 
       Raspbian
 
-   Master System
+    Master System
 
       Linux (e.g. Ubuntu / Arch)
 
