@@ -42,6 +42,8 @@ Hardware Requirements
     JDK 8 for Java Application
 
     Java Swing for UI
+    
+    Python 3
 
   Operating System Requirements
 
@@ -54,5 +56,24 @@ Hardware Requirements
       Linux (e.g. Ubuntu / Arch)
 
 
-# Installation Guide
+# How to Run SecureVis
+
+Edge Device
+    Run the client.py script in a python3 environment in the following way:
+    
+    client.py [ROOM_NAME] 1153
+    
+    Where [ROOM_NAME] can be replaced with the name of the room you'd like to setup, and 1153 is the port SecureVis uses.
+    
+Master System
+
+    How to run the server module:
+       
+       Run the server.py script in a python3 environment in the following way:
+       
+        server.py 1153
+        
+        Where 1153 is the port we're listening on. 
+        
+    
 
